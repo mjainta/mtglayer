@@ -7,4 +7,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+WORKDIR /usr/src/app/mtgcrawler
+
 CMD [ "python", "./your-daemon-or-script.py" ]
