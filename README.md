@@ -17,7 +17,7 @@ docker run -u $(id -u):$(id -g) -v $(pwd):/usr/src/app mtglayer scrapy startproj
 docker run -u $(id -u):$(id -g) -v $(pwd):/usr/src/app mtglayer scrapy crawl -o buylist.json ckbl
 ```
 
-Connect to the container and run stuff there buy yourself:
+Connect to the container and run stuff there by yourself:
 ```bash
 docker run -ti -u $(id -u):$(id -g) -v $(pwd):/usr/src/app mtglayer bash
 $ scrapy crawl -o buylist.json ckbl
