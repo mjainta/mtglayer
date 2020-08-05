@@ -5,13 +5,11 @@ import re
 class MbbuylistSpider(scrapy.Spider):
     name = "mbbl"
 
-    def start_requests(self):
-        urls = [
-            # 'https://www.bazaarofmagic.eu/',
-            'https://www.bazaarofmagic.eu/en-WW/buylist/most-wanted?page=1&items=144&view=table',
-        ]
-        for url in urls:
-            yield scrapy.Request(url=url, callback=self.parse)
+    start_urls = [
+        # Search for most-wanted, foil/non-foil, sort:most-popular
+        'https://www.bazaarofmagic.eu/en-WW/buylist/most-wanted?page=1&items=144&view=table'
+    ]
+    allowed_domains = ["bazaarofmagic.eu"]
 
     def parse(self, response):
         for quote in response.css('div[class="product-list-visual"] div[class="row"] tbody tr'):
