@@ -32,3 +32,10 @@ docker run -ti -u $(id -u):$(id -g) -v $(pwd):/usr/src/app mtglayer bash
 $ python launcher.py
 $ scrapy crawl -o buylist.json ckbl
 ```
+
+mkdir /usr/src/app/lib
+find . -type f -name "*.so" -exec cp {} /usr/src/app/lib \;
+cd /usr/src/app
+zip -r lambda_function.zip lib
+cd mtgcrawler/
+zip -g -r ../lambda_function.zip scrapy.cfg launcher.py mtgcrawler/
