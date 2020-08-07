@@ -48,7 +48,8 @@ resource "aws_lambda_function" "lambda_function" {
   handler = "launcher.scrape"
   source_code_hash = filebase64sha256("lambda_function.zip")
 
-  runtime = "python3.8"
+  runtime = "python3.7"
+  timeout = 120
 }
 
 resource "aws_lambda_alias" "lambda_function" {
