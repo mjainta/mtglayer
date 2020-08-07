@@ -17,7 +17,7 @@ def is_in_aws():
     return os.getenv('AWS_EXECUTION_ENV') is not None
 
 
-def crawl(settings={}, spider_name="ckbl", spider_kwargs={}):
+def crawl(settings={}, spider_kwargs={}, spider_name="mbbl"):
     project_settings = get_project_settings()
     spider_loader = SpiderLoader(project_settings)
 
@@ -25,6 +25,8 @@ def crawl(settings={}, spider_name="ckbl", spider_kwargs={}):
 
     feed_uri = ""
     feed_format = "json"
+
+    print(settings)
 
     try:
         spider_key = urlparse(spider_kwargs.get("start_urls")[0]).hostname if spider_kwargs.get(

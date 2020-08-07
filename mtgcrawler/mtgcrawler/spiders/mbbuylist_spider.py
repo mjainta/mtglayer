@@ -13,7 +13,6 @@ class MbbuylistSpider(scrapy.Spider):
 
     def parse(self, response):
         for quote in response.css('div[class="product-list-visual"] div[class="row"] tbody tr'):
-            print(quote.xpath('td[2]/a/text()').get())
             match = re.search('set-([a-zA-Z0-9]+)_', quote.xpath('td[3]/i/@class').get())
             setName = match.group(1)
             cardNameRaw = quote.xpath('td[2]/a/text()').get()

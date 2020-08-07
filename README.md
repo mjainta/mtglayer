@@ -19,6 +19,12 @@ To use them, change the spidername in crawl.py and then run
 docker run -u $(id -u):$(id -g) -v $(pwd):/usr/src/app mtglayer python launcher.py
 ```
 
+or use `make`
+
+```bash
+make run-launcher
+```
+
 It will create a new file for the json output in the `feed/` directory.
 
 To run a spider directly use:
@@ -33,9 +39,8 @@ $ python launcher.py
 $ scrapy crawl -o buylist.json ckbl
 ```
 
-mkdir /usr/src/app/lib
-find . -type f -name "*.so" -exec cp {} /usr/src/app/lib \;
-cd /usr/src/app
-zip -r lambda_function.zip lib
-cd mtgcrawler/
-zip -g -r ../lambda_function.zip scrapy.cfg launcher.py mtgcrawler/
+## Build an AWS Lambda .zip
+
+```bash
+make build-lambda
+```

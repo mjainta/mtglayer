@@ -1,2 +1,6 @@
 __pycache__/
 mtgcrawler/feed/
+package/
+infrastructure/lambda_function.zip
+infrastructure/terraform.tfstate*
+infrastructure/.terraform/
