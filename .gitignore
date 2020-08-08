@@ -4,3 +4,4 @@ package/
 infrastructure/lambda_function.zip
 infrastructure/terraform.tfstate*
 infrastructure/.terraform/
+infrastructure/variables.tf
