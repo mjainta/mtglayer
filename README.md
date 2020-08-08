@@ -44,3 +44,13 @@ $ scrapy crawl -o buylist.json ckbl
 ```bash
 make build-lambda
 ```
+
+## Setup the AWS infrastructure and upload the lambda .zip file
+
+We use terraform to setup the AWs infrastructure.
+
+```bash
+cd terraform
+terraform init # Only has to be done once
+terraform apply
+```
