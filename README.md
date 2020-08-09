@@ -16,7 +16,7 @@ docker run -u $(id -u):$(id -g) -v $(pwd):/usr/src/app mtglayer scrapy startproj
 To run on AWS lambda we created launcher.py and crawl.py
 To use them, change the spidername in crawl.py and then run
 ```bash
-docker run -u $(id -u):$(id -g) -v $(pwd):/usr/src/app mtglayer python launcher.py
+docker run -u $(id -u):$(id -g) -v $(pwd):/usr/src/app mtglayer python3 launcher.py
 ```
 
 or use `make`
@@ -35,7 +35,7 @@ docker run -u $(id -u):$(id -g) -v $(pwd):/usr/src/app mtglayer scrapy crawl -o 
 Connect to the container and run stuff there by yourself:
 ```bash
 docker run -ti -u $(id -u):$(id -g) -v $(pwd):/usr/src/app mtglayer bash
-$ python launcher.py
+$ python3 launcher.py
 $ scrapy crawl -o buylist.json ckbl
 ```
 
