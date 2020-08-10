@@ -64,8 +64,7 @@ with f:
                 productId = productRow[1]
                 cursor.execute(f"""
                 select last(german_pro_low, created_at),
-                    last(low_price_min_ex, created_at),
-                    last(foil_sell, created_at)
+                    last(low_price_min_ex, created_at)
                 from timeseries_priceguides
                 where id_product = '{productId}';""")
                 priceRow = cursor.fetchone()
@@ -73,9 +72,6 @@ with f:
                 if priceRow:
                     foundProducts.append(productRow + priceRow)
                     priceToCompare = priceRow[0]
-
-                    if foil and priceRow[2] is not None:
-                        priceToCompare = priceRow[2]
 
                     if priceToCompare is not None and float(priceToCompare) < (euroAmount * 0.7):
                         possibleBuys.append(productRow + priceRow)
