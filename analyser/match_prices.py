@@ -82,7 +82,8 @@ with f:
 
                         params = {
                             'idProduct': productId,
-                            'maxResults': 10,
+                            'start': 0,
+                            'maxResults': 5,
                             'minUserScore': 3,
                             'idLanguage': 1,
                             'minCondition': 'NM',
@@ -112,14 +113,10 @@ with f:
                     notFoundPrices.append(productRow)
 
 
-    # except (Exception, psycopg2.Error) as error :
-    #     print ("Error while connecting to PostgreSQL", error)
-    # finally:
-    #     #closing database connection.
-    #         if(connection):
-    #             cursor.close()
-    #             connection.close()
-    #             print("PostgreSQL connection is closed")
+if(connection):
+    cursor.close()
+    connection.close()
+    print("PostgreSQL connection is closed")
 
 print(foundProducts)
 print(f'found %d products' % len(foundProducts))
