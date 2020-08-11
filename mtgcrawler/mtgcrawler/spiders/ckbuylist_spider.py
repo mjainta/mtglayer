@@ -12,11 +12,17 @@ class CkbuylistSpider(scrapy.Spider):
 
     def parse(self, response):
         for quote in response.css('div[class="itemContentWrapper"]'):
+
             yield {
-                'card-name': quote.css('span[class="productDetailTitle"]::text').get(),
-                'set-name': quote.css('div[class="productDetailSet"] a::text').get(),
-                'dollar-amount': quote.css('span[class="sellDollarAmount"]::text').get(),
-                'cent-amount': quote.css('span[class="sellCentsAmount"]::text').get(),
+                'card_name': quote.css('span[class="productDetailTitle"]::text').get(),
+                'set_name': quote.css('div[class="productDetailSet"] a::text').get(),
+                'dollar_amount_cash': quote.css('div[class="usdSellPrice"] span[class="sellDollarAmount"]::text').get(),
+                'cent_amount_cash': quote.css('div[class="usdSellPrice"] span[class="sellCentsAmount"]::text').get(),
+                'dollar_amount_credit': quote.css('div[class="creditSellPrice"] span[class="sellDollarAmount"]::text').get(),
+                'cent_amount_credit': quote.css('div[class="creditSellPrice"] span[class="sellCentsAmount"]::text').get(),
+                'max_quantity': quote.css('input[class="maxQty"]').attrib['value'],
+                'product_id': quote.css('input[class="product_id"]').attrib['value'],
+                'foil': False,
             }
 
         next_link = response.css('ul[class="pagination"]').xpath('li[last()]/a').attrib['href']
