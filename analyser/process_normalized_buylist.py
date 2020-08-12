@@ -42,7 +42,7 @@ with f:
         buylistCash = float(buylistEntry[1]['buylistCash'])
         euroAmount = buylistCash * 0.85
 
-        if math.isnan(mcmId):
+        if math.isnan(mcmId) or buylistEntry[1]['special_art']:
             continue
         else:
             mcmId = int(mcmId)

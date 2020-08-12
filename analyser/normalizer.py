@@ -40,6 +40,7 @@ def normalizeBuylistCardkingdom(filePath, buylistName):
         foil = card[1]['foil']
         maxQuantity= int(card[1]['max_quantity'])
         productId= int(card[1]['product_id'])
+        specialArt= int(card[1]['special_art'])
 
         result = cursor.execute(f"select name, set_id, mcm_id from mtgjson_cards where cardkingdom_id = '{productId}';")
         row = cursor.fetchone()
@@ -51,17 +52,18 @@ def normalizeBuylistCardkingdom(filePath, buylistName):
         data.append({
             'buylistName': 'Cardkingdom',
             'cardName': cardName,
+            'special_art': specialArt,
             'buylistCardId': productId,
             'mcmCardId': mcmId,
             'buylistCredit': priceCredit,
-            'buylistCash': priceCash
+            'buylistCash': priceCash,
         })
 
     return data
 
 
 def getDataFrame(data):
-    df = pd.DataFrame (data, columns = ['buylistName', 'cardName', 'buylistCardId', 'mcmCardId', 'buylistCredit', 'buylistCash'])
+    df = pd.DataFrame (data, columns = ['buylistName', 'cardName', 'special_art', 'buylistCardId', 'mcmCardId', 'buylistCredit', 'buylistCash'])
     print (df)
     return df
 
