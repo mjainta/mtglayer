@@ -41,6 +41,8 @@ with f:
         mcmId = buylistEntry[1]['mcmCardId']
         buylistCash = float(buylistEntry[1]['buylistCash'])
         euroAmount = buylistCash * 0.85
+        maxQuantity = int(buylistEntry[1]['maxQuantity'])
+        setName = int(buylistEntry[1]['setName'])
 
         if math.isnan(mcmId) or buylistEntry[1]['special_art']:
             continue
@@ -61,8 +63,10 @@ with f:
                 foundProducts.append({
                     'buylistName': buylistEntry[1]['buylistName'],
                     'cardName': buylistEntry[1]['cardName'],
+                    'setName': setName,
                     'mcmCardId': buylistEntry[1]['mcmCardId'],
                     'euroAmount': euroAmount,
+                    'maxQuantity': maxQuantity,
                     'germanProLow': germanProLow,
                     'lowMinEx': priceRow[1],
                 })
@@ -71,8 +75,10 @@ with f:
                     possibleBuys.append({
                         'buylistName': buylistEntry[1]['buylistName'],
                         'cardName': buylistEntry[1]['cardName'],
+                        'setName': setName,
                         'mcmCardId': buylistEntry[1]['mcmCardId'],
                         'euroAmount': euroAmount,
+                        'maxQuantity': maxQuantity,
                         'germanProLow': germanProLow,
                         'lowMinEx': priceRow[1],
                     })
@@ -80,7 +86,7 @@ with f:
                     params = {
                         'idProduct': mcmId,
                         'start': 0,
-                        'maxResults': 5,
+                        'maxResults': 1,
                         'minUserScore': 3,
                         'idLanguage': 1,
                         'minCondition': 'NM',
@@ -96,8 +102,10 @@ with f:
                         data.append({
                             'buylistName': buylistEntry[1]['buylistName'],
                             'cardName': buylistEntry[1]['cardName'],
+                            'setName': setName,
                             'mcmCardId': buylistEntry[1]['mcmCardId'],
                             'euroAmount': euroAmount,
+                            'maxQuantity': maxQuantity,
                             'germanProLow': germanProLow,
                             'lowMinEx': priceRow[1],
                             'seller': article['seller']['username'],
@@ -110,8 +118,10 @@ with f:
                 notFoundPrices.append({
                     'buylistName': buylistEntry[1]['buylistName'],
                     'cardName': buylistEntry[1]['cardName'],
+                    'setName': setName,
                     'mcmCardId': buylistEntry[1]['mcmCardId'],
                     'euroAmount': euroAmount,
+                    'maxQuantity': maxQuantity,
                 })
 
 
@@ -123,8 +133,10 @@ if(connection):
 df = pd.DataFrame (data, columns = [
     'buylistName',
     'cardName',
+    'setName',
     'mcmCardId',
     'euroAmount',
+    'maxQuantity',
     'germanProLow',
     'lowMinEx',
     'seller',

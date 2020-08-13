@@ -1,7 +1,5 @@
 from dotenv import load_dotenv
 from pathlib import Path
-from mkmsdk.mkm import Mkm
-from mkmsdk.api_map import _API_MAP
 
 import csv
 import os
@@ -52,18 +50,31 @@ def normalizeBuylistCardkingdom(filePath, buylistName):
         data.append({
             'buylistName': 'Cardkingdom',
             'cardName': cardName,
+            'setName': setName,
             'special_art': specialArt,
             'buylistCardId': productId,
             'mcmCardId': mcmId,
             'buylistCredit': priceCredit,
             'buylistCash': priceCash,
+            'maxQuantity': maxQuantity,
         })
 
     return data
 
 
 def getDataFrame(data):
-    df = pd.DataFrame (data, columns = ['buylistName', 'cardName', 'special_art', 'buylistCardId', 'mcmCardId', 'buylistCredit', 'buylistCash'])
+    df = pd.DataFrame (data, columns = [
+        'buylistName',
+        'cardName',
+        'setName',
+        'special_art',
+        'buylistCardId',
+        'mcmCardId',
+        'buylistCredit',
+        'buylistCash',
+        'maxQuantity',
+        ]
+    )
     print (df)
     return df
 
