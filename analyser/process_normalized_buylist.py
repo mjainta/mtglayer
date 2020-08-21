@@ -20,7 +20,7 @@ possibleBuys = []
 notFoundPrices = []
 validMcmIdCount = 0
 
-mkm = Mkm(_API_MAP["2.0"]["api"], _API_MAP["2.0"]["api_root"])
+# mkm = Mkm(_API_MAP["2.0"]["api"], _API_MAP["2.0"]["api_root"])
 
 f = open('result.csv', 'w')
 
@@ -42,7 +42,7 @@ with f:
         buylistCash = float(buylistEntry[1]['buylistCash'])
         euroAmount = buylistCash * 0.85
         maxQuantity = int(buylistEntry[1]['maxQuantity'])
-        setName = int(buylistEntry[1]['setName'])
+        setName = buylistEntry[1]['setName']
 
         if math.isnan(mcmId) or buylistEntry[1]['special_art']:
             continue
@@ -83,37 +83,37 @@ with f:
                         'lowMinEx': priceRow[1],
                     })
 
-                    params = {
-                        'idProduct': mcmId,
-                        'start': 0,
-                        'maxResults': 1,
-                        'minUserScore': 3,
-                        'idLanguage': 1,
-                        'minCondition': 'NM',
-                        'minAvailable': 2,
-                        'isFoil': False,
-                    }
-                    response = mkm.market_place.articles(product=mcmId, params=params)
+                    # params = {
+                    #     'idProduct': mcmId,
+                    #     'start': 0,
+                    #     'maxResults': 1,
+                    #     'minUserScore': 3,
+                    #     'idLanguage': 1,
+                    #     'minCondition': 'NM',
+                    #     'minAvailable': 2,
+                    #     'isFoil': False,
+                    # }
+                    # response = mkm.market_place.articles(product=mcmId, params=params)
 
-                    for article in response.json()['article']:
-                        priceEur = article['priceEUR']
-                        count = article['count']
+                    # for article in response.json()['article']:
+                    #     priceEur = article['priceEUR']
+                    #     count = article['count']
 
-                        data.append({
-                            'buylistName': buylistEntry[1]['buylistName'],
-                            'cardName': buylistEntry[1]['cardName'],
-                            'setName': setName,
-                            'mcmCardId': buylistEntry[1]['mcmCardId'],
-                            'euroAmount': euroAmount,
-                            'maxQuantity': maxQuantity,
-                            'germanProLow': germanProLow,
-                            'lowMinEx': priceRow[1],
-                            'seller': article['seller']['username'],
-                            'country': article['seller']['address']['country'],
-                            'shippingDays': article['seller']['shipsFast'],
-                            'count': count,
-                            'priceEurOffer': priceEur
-                        })
+                    #     data.append({
+                    #         'buylistName': buylistEntry[1]['buylistName'],
+                    #         'cardName': buylistEntry[1]['cardName'],
+                    #         'setName': setName,
+                    #         'mcmCardId': buylistEntry[1]['mcmCardId'],
+                    #         'euroAmount': euroAmount,
+                    #         'maxQuantity': maxQuantity,
+                    #         'germanProLow': germanProLow,
+                    #         'lowMinEx': priceRow[1],
+                    #         'seller': article['seller']['username'],
+                    #         'country': article['seller']['address']['country'],
+                    #         'shippingDays': article['seller']['shipsFast'],
+                    #         'count': count,
+                    #         'priceEurOffer': priceEur
+                    #     })
             else:
                 notFoundPrices.append({
                     'buylistName': buylistEntry[1]['buylistName'],
@@ -130,7 +130,7 @@ if(connection):
     connection.close()
     print("PostgreSQL connection is closed")
 
-df = pd.DataFrame (data, columns = [
+df = pd.DataFrame (possibleBuys, columns = [
     'buylistName',
     'cardName',
     'setName',
