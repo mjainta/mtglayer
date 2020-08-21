@@ -20,3 +20,16 @@ Connect to the container and run stuff there by yourself:
 docker run -u $(id -u):$(id -g) -v $(pwd):/usr/src/app mtglayer-analyser bash
 $ python match_prices.py
 ```
+
+## Compare ck to mcm prices
+
+First run a spider for ck and put it into `analyser/ckbl-www.cardkingdom.com.json`.
+
+Connect to the container and run stuff there:
+```bash
+docker run -u $(id -u):$(id -g) -v $(pwd):/usr/src/app mtglayer-analyser bash
+$ python controller.py
+$ python process_normalized_buylist.py
+```
+
+This will create a file called `analyser/buylists_results.json` with the results.
