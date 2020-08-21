@@ -17,7 +17,7 @@ def is_in_aws():
     return os.getenv('AWS_EXECUTION_ENV') is not None
 
 
-def crawl(settings={}, spider_kwargs={}, spider_name="mbbl"):
+def crawl(settings={}, spider_kwargs={}, spider_name="ckbl"):
     project_settings = get_project_settings()
     spider_loader = SpiderLoader(project_settings)
 
