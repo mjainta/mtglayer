@@ -12,8 +12,30 @@ import math
 env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path, verbose=True)
 
-df = pd.read_json('normalized_buylists.json', orient='index')
-print(df)
+
+def isArbitrageOption(germanProLow, buylistEur):
+    if germanProLow is not None:
+        if buylistEur <= 0.75:
+            return False
+
+        shippingFee = 0.30
+        profitRatio = 0.7
+        germanProLow = float(germanProLow)
+        flatProfitThreshold = 5
+
+        # The ratio is better for low value singles
+        if germanProLow < (buylistEur * profitRatio - shippingFee):
+            return True
+
+        # The flat profit threshold is better for high value singles, since the ratio would be unexpectedly high
+        if germanProLow < (buylistEur - flatProfitThreshold - shippingFee):
+            return True
+
+    else:
+        return False
+
+dfBuylists = pd.read_json('normalized_buylists.json', orient='index')
+print(dfBuylists)
 
 foundProducts = []
 possibleBuys = []
@@ -36,8 +58,11 @@ with f:
 
     cursor = connection.cursor()
 
-    for buylistEntry in df.iterrows():
-        print(buylistEntry)
+    interimData = []
+    batchSize = 100
+    count = 0
+
+    for buylistEntry in dfBuylists.iterrows():
         mcmId = buylistEntry[1]['mcmCardId']
         buylistCash = float(buylistEntry[1]['buylistCash'])
         euroAmount = buylistCash * 0.85
@@ -47,41 +72,60 @@ with f:
         if math.isnan(mcmId) or buylistEntry[1]['special_art']:
             continue
         else:
-            mcmId = int(mcmId)
-            validMcmIdCount = validMcmIdCount + 1
+            interimData.append({
+                'buylistName': buylistEntry[1]['buylistName'],
+                'cardName': buylistEntry[1]['cardName'],
+                'setName': setName,
+                'mcmCardId': str(int(mcmId)),
+                'euroAmount': euroAmount,
+                'maxQuantity': maxQuantity,
+            })
+            count = count + 1
 
-            cursor.execute(f"""
-            select last(german_pro_low, created_at),
-                last(low_price_min_ex, created_at)
-            from timeseries_priceguides
-            where id_product = '{mcmId}';""")
-            priceRow = cursor.fetchone()
+            if count >= batchSize:
+                print('Processing %d' % mcmId)
+                ids = list(d['mcmCardId'] for d in interimData)
+                sql = """
+                select last(german_pro_low, created_at),
+                    last(low_price_min_ex, created_at),
+                    id_product
+                from timeseries_priceguides
+                where id_product = ANY(%s)
+                GROUP BY id_product;"""
+                result = cursor.execute(sql, (ids,))
+                rows = cursor.fetchall()
 
-            if priceRow:
-                germanProLow = priceRow[0]
+                for priceRow in rows:
+                    validMcmIdCount = validMcmIdCount + 1
+                    germanProLow = priceRow[0]
+                    lowMinEx = priceRow[1]
 
-                foundProducts.append({
-                    'buylistName': buylistEntry[1]['buylistName'],
-                    'cardName': buylistEntry[1]['cardName'],
-                    'setName': setName,
-                    'mcmCardId': buylistEntry[1]['mcmCardId'],
-                    'euroAmount': euroAmount,
-                    'maxQuantity': maxQuantity,
-                    'germanProLow': germanProLow,
-                    'lowMinEx': priceRow[1],
-                })
+                    buylistEntry = list(filter(lambda x: x['mcmCardId'] == priceRow[2], interimData))
+                    if buylistEntry:
+                        buylistEntry = buylistEntry[0]
 
-                if germanProLow is not None and float(germanProLow) < (euroAmount * 0.7):
-                    possibleBuys.append({
-                        'buylistName': buylistEntry[1]['buylistName'],
-                        'cardName': buylistEntry[1]['cardName'],
-                        'setName': setName,
-                        'mcmCardId': buylistEntry[1]['mcmCardId'],
-                        'euroAmount': euroAmount,
-                        'maxQuantity': maxQuantity,
+                    foundProducts.append({
+                        'buylistName': buylistEntry['buylistName'],
+                        'cardName': buylistEntry['cardName'],
+                        'setName': buylistEntry['setName'],
+                        'mcmCardId': buylistEntry['mcmCardId'],
+                        'euroAmount': buylistEntry['euroAmount'],
+                        'maxQuantity': buylistEntry['maxQuantity'],
                         'germanProLow': germanProLow,
-                        'lowMinEx': priceRow[1],
+                        'lowMinEx': lowMinEx,
                     })
+
+                    if isArbitrageOption(germanProLow, buylistEntry['euroAmount']):
+                        possibleBuys.append({
+                            'buylistName': buylistEntry['buylistName'],
+                            'cardName': buylistEntry['cardName'],
+                            'setName': buylistEntry['setName'],
+                            'mcmCardId': buylistEntry['mcmCardId'],
+                            'euroAmount': buylistEntry['euroAmount'],
+                            'maxQuantity': maxQuantity,
+                            'germanProLow': germanProLow,
+                            'lowMinEx': lowMinEx,
+                        })
 
                     # params = {
                     #     'idProduct': mcmId,
@@ -114,15 +158,8 @@ with f:
                     #         'count': count,
                     #         'priceEurOffer': priceEur
                     #     })
-            else:
-                notFoundPrices.append({
-                    'buylistName': buylistEntry[1]['buylistName'],
-                    'cardName': buylistEntry[1]['cardName'],
-                    'setName': setName,
-                    'mcmCardId': buylistEntry[1]['mcmCardId'],
-                    'euroAmount': euroAmount,
-                    'maxQuantity': maxQuantity,
-                })
+                interimData = []
+                count = 0
 
 
 if(connection):
@@ -149,11 +186,12 @@ df = pd.DataFrame (possibleBuys, columns = [
 print (df)
 df.to_json('buylists_results.json', orient='index')
 
-print(foundProducts)
+# print(foundProducts)
 print(f'found %d products' % len(foundProducts))
 
-print(possibleBuys)
+# print(possibleBuys)
 print(f'found %d possibilities' % len(possibleBuys))
 
-print(notFoundPrices)
-print(f'not found %d prices' % len(notFoundPrices))
+# print(notFoundPrices)
+notFoundPrices = len(dfBuylists) - len(foundProducts)
+print(f'not found %d prices' % notFoundPrices)
